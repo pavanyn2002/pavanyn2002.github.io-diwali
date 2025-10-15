@@ -1,0 +1,403 @@
+/* Light of My Heart - CSS Styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Great+Vibes&display=swap');
+
+:root {
+    --primary-maroon: #5a2a27;
+    --gold: #facc15;
+    --warm-amber: #f59e0b;
+    --midnight-purple: #1a102b;
+    --warm-orange: #fb923c;
+    --cream: #fef7cd;
+    --soft-pink: #ffc0cb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    background: var(--midnight-purple);
+}
+
+.page {
+    display: none;
+    position: relative;
+}
+
+.page.active {
+    display: flex;
+}
+
+/* Animations */
+@keyframes glow {
+    0%, 100% { text-shadow: 0 0 20px #facc15, 0 0 30px #facc15, 0 0 40px #facc15; }
+    50% { text-shadow: 0 0 10px #facc15, 0 0 20px #facc15, 0 0 30px #facc15; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(2deg); }
+    66% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; transform: scale(1) rotate(-2deg); }
+    25% { opacity: 0.8; transform: scale(1.1) rotate(1deg); }
+    50% { opacity: 0.9; transform: scale(0.95) rotate(-1deg); }
+    75% { opacity: 1.1; transform: scale(1.05) rotate(2deg); }
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-glow {
+    animation: glow 3s ease-in-out infinite;
+}
+
+/* Floating Diyas */
+.floating-diyas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.diya-float {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, #facc15 30%, #fb923c 70%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.7;
+}
+
+.diya-float::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 15px;
+    background: linear-gradient(to top, #ff6b35, #ffd700);
+    border-radius: 50%;
+    animation: flicker 2s ease-in-out infinite;
+}
+
+/* Game 1 - Diyas */
+.diyas-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.diya {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.diya:hover {
+    transform: scale(1.1);
+}
+
+.diya-body {
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(to bottom, #8b4513, #a0522d);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    position: relative;
+    border: 2px solid #654321;
+}
+
+.diya-flame {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 25px;
+    background: linear-gradient(to top, #ff6b35, #ffd700);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    animation: flicker 1.5s ease-in-out infinite;
+}
+
+.diya.lit .diya-flame {
+    opacity: 1;
+}
+
+.diya.lit .diya-body {
+    box-shadow: 0 0 20px #ffd700;
+}
+
+/* Dancing Diyas */
+.dancing-diyas-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 200px;
+    position: relative;
+}
+
+.dancing-diya {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}
+
+.dancing-diya .diya-body {
+    width: 100%;
+    height: 70%;
+    background: linear-gradient(to bottom, #facc15, #fb923c);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    position: relative;
+}
+
+.dancing-diya .diya-flame {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 20px;
+    background: linear-gradient(to top, #ff6b35, #ffd700);
+    border-radius: 50%;
+    animation: flicker 1.5s ease-in-out infinite;
+}
+
+.dancing-diya .diya-face {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    z-index: 2;
+}
+
+.dancing-diya.dancing {
+    animation: dance 2s ease-in-out;
+}
+
+@keyframes dance {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-10px) rotate(-5deg); }
+    50% { transform: translateX(10px) rotate(5deg); }
+    75% { transform: translateX(-5px) rotate(-2deg); }
+}
+
+/* Confession Diya */
+.confession-diya-container {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.confession-diya {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    transition: all 0.5s ease;
+}
+
+.confession-diya:hover {
+    transform: scale(1.1);
+}
+
+.diya-body-large {
+    width: 100%;
+    height: 80%;
+    background: linear-gradient(to bottom, #facc15, #fb923c);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    position: relative;
+    border: 3px solid #8b4513;
+}
+
+.diya-flame-large {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 40px;
+    background: linear-gradient(to top, #ff6b35, #ffd700);
+    border-radius: 50%;
+    animation: flicker 2s ease-in-out infinite;
+}
+
+.confession-diya.clicked {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 30px #ffd700);
+}
+
+/* Gifts */
+.gift-item {
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.gift-item:hover {
+    transform: scale(1.1) rotate(5deg);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.gift-icon {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.gift-label {
+    color: #facc15;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+/* Particle Effects */
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #ffd700;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: sparkle 3s linear infinite;
+}
+
+/* Floating Wishes */
+.floating-wish {
+    position: absolute;
+    color: #ffd700;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 0 0 10px #ffd700;
+    animation: floatUp 4s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+}
+
+/* Fireworks Canvas */
+#fireworksCanvas {
+    background: radial-gradient(circle at 50% 100%, rgba(25, 25, 112, 0.8) 0%, rgba(0, 0, 0, 0.9) 70%);
+}
+
+/* Typewriter Effect */
+.typewriter {
+    overflow: hidden;
+    border-right: .15em solid orange;
+    white-space: nowrap;
+    animation: typewriter 4s steps(40, end), blink-caret .75s step-end infinite;
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: orange; }
+}
+
+/* Response Buttons */
+.response-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.response-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.response-btn:hover::before {
+    left: 100%;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .text-6xl, .text-8xl {
+        font-size: 2.5rem;
+    }
+    
+    .text-4xl {
+        font-size: 2rem;
+    }
+    
+    .dancing-diyas-container {
+        flex-wrap: wrap;
+        height: auto;
+        gap: 20px;
+    }
+    
+    .diyas-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    
+    .gifts-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: var(--midnight-purple);
+    }
+}
