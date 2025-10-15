@@ -1,0 +1,33 @@
+{
+  "name": "light-of-my-heart",
+  "version": "1.0.0",
+  "description": "A romantic Diwali-themed interactive web experience for love confessions",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx http-server . -p 8000",
+    "build": "echo 'No build process required - static files'"
+  },
+  "keywords": [
+    "diwali",
+    "love",
+    "romance",
+    "interactive",
+    "web",
+    "festival",
+    "lights",
+    "confession",
+    "canvas",
+    "animations"
+  ],
+  "author": "Pavan YN",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pavanyn2002/light-of-my-heart.git"
+  },
+  "homepage": "https://pavanyn2002.github.io/light-of-my-heart/",
+  "bugs": {
+    "url": "https://github.com/pavanyn2002/light-of-my-heart/issues"
+  }
+}
