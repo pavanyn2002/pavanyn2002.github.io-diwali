@@ -1,4 +1,4 @@
-// Light of My Heart - Interactive JavaScript
+// Light of My Heart - Interactive JavaScript with Enhanced Music Integration
 class LightOfMyHeart {
     constructor() {
         this.userName = '';
@@ -25,6 +25,8 @@ class LightOfMyHeart {
         this.litDiyas = 0;
         this.fireworkCount = 0;
         this.musicPlaying = false;
+        this.musicLoaded = false;
+        this.audioContext = null;
         
         this.init();
     }
@@ -36,6 +38,7 @@ class LightOfMyHeart {
         this.setupFireworks();
         this.setupMusic();
         this.createFloatingDiyas();
+        this.preloadMusic();
     }
 
     setupEventListeners() {
@@ -119,15 +122,71 @@ class LightOfMyHeart {
             this.currentPage++;
             document.getElementById(this.pages[this.currentPage]).classList.add('active');
             
+            // Adjust music volume based on current page
+            this.adjustMusicForPage(this.currentPage);
+            
             if (this.currentPage === 2) { // Fireworks page
                 this.startFireworks();
             }
         }
     }
 
+    // Enhanced music setup with better error handling
     setupMusic() {
         const music = document.getElementById('backgroundMusic');
+        
+        // Set initial volume and properties
         music.volume = 0.3;
+        music.loop = true;
+        
+        // Add event listeners for music loading
+        music.addEventListener('loadstart', () => {
+            this.showMusicStatus('Loading Diwali music...');
+        });
+        
+        music.addEventListener('canplaythrough', () => {
+            this.musicLoaded = true;
+            this.hideMusicStatus();
+            console.log('🎵 Diwali music loaded successfully!');
+        });
+        
+        music.addEventListener('error', (e) => {
+            console.error('Music loading error:', e);
+            this.showMusicStatus('Music unavailable - enjoy visual experience!');
+            setTimeout(() => this.hideMusicStatus(), 3000);
+        });
+        
+        music.addEventListener('ended', () => {
+            if (this.musicPlaying) {
+                music.currentTime = 0;
+                music.play().catch(e => console.log('Music replay failed:', e));
+            }
+        });
+    }
+
+    preloadMusic() {
+        const music = document.getElementById('backgroundMusic');
+        
+        // Preload music for faster playback
+        music.load();
+        
+        // Create audio context for better control (if supported)
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.log('Web Audio API not supported');
+        }
+    }
+
+    showMusicStatus(message) {
+        const statusEl = document.getElementById('musicLoadingStatus');
+        statusEl.textContent = message;
+        statusEl.classList.remove('hidden');
+    }
+
+    hideMusicStatus() {
+        const statusEl = document.getElementById('musicLoadingStatus');
+        statusEl.classList.add('hidden');
     }
 
     toggleMusic() {
@@ -135,14 +194,124 @@ class LightOfMyHeart {
         const musicBtn = document.getElementById('musicToggle');
         
         if (this.musicPlaying) {
-            music.pause();
-            musicBtn.innerHTML = '🔇';
-            this.musicPlaying = false;
+            // Fade out music
+            this.fadeOutMusic(music, () => {
+                music.pause();
+                musicBtn.innerHTML = '🔇';
+                musicBtn.classList.add('bg-gray-500');
+                musicBtn.classList.remove('bg-yellow-500');
+                this.musicPlaying = false;
+            });
         } else {
-            music.play().catch(e => console.log('Audio play failed:', e));
-            musicBtn.innerHTML = '🔊';
-            this.musicPlaying = true;
+            // Resume audio context if suspended
+            if (this.audioContext && this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+            
+            // Fade in music
+            music.volume = 0;
+            music.play().then(() => {
+                this.fadeInMusic(music);
+                musicBtn.innerHTML = '🔊';
+                musicBtn.classList.remove('bg-gray-500');
+                musicBtn.classList.add('bg-yellow-500');
+                this.musicPlaying = true;
+            }).catch(e => {
+                console.log('Audio play failed:', e);
+                this.showMusicStatus('Click to enable music after user interaction');
+                setTimeout(() => this.hideMusicStatus(), 3000);
+            });
         }
+    }
+
+    fadeInMusic(audioElement, duration = 1000) {
+        const targetVolume = 0.3;
+        const steps = 20;
+        const stepTime = duration / steps;
+        const volumeStep = targetVolume / steps;
+        
+        let currentStep = 0;
+        const fadeInterval = setInterval(() => {
+            if (currentStep >= steps) {
+                clearInterval(fadeInterval);
+                audioElement.volume = targetVolume;
+                return;
+            }
+            
+            audioElement.volume = Math.min(volumeStep * currentStep, targetVolume);
+            currentStep++;
+        }, stepTime);
+    }
+
+    fadeOutMusic(audioElement, callback, duration = 1000) {
+        const initialVolume = audioElement.volume;
+        const steps = 20;
+        const stepTime = duration / steps;
+        const volumeStep = initialVolume / steps;
+        
+        let currentStep = 0;
+        const fadeInterval = setInterval(() => {
+            if (currentStep >= steps) {
+                clearInterval(fadeInterval);
+                audioElement.volume = 0;
+                if (callback) callback();
+                return;
+            }
+            
+            audioElement.volume = Math.max(initialVolume - (volumeStep * currentStep), 0);
+            currentStep++;
+        }, stepTime);
+    }
+
+    adjustMusicForPage(pageIndex) {
+        const music = document.getElementById('backgroundMusic');
+        if (!this.musicPlaying || !music) return;
+        
+        // Adjust volume based on page content
+        let targetVolume = 0.3;
+        
+        switch(pageIndex) {
+            case 0: // Welcome - normal volume
+                targetVolume = 0.3;
+                break;
+            case 1: // Light Diyas - slightly lower for focus
+                targetVolume = 0.25;
+                break;
+            case 2: // Fireworks - lower for sound effects
+                targetVolume = 0.2;
+                break;
+            case 3: // Dance - normal volume
+                targetVolume = 0.3;
+                break;
+            case 4: // Wish - lower for concentration
+                targetVolume = 0.25;
+                break;
+            case 5: // Confession - dramatic volume
+                targetVolume = 0.35;
+                break;
+            case 6: // Gifts - celebratory volume
+                targetVolume = 0.3;
+                break;
+        }
+        
+        // Smooth volume transition
+        const currentVolume = music.volume;
+        const volumeDiff = targetVolume - currentVolume;
+        const steps = 10;
+        const stepTime = 50;
+        const volumeStep = volumeDiff / steps;
+        
+        let step = 0;
+        const volumeInterval = setInterval(() => {
+            if (step >= steps) {
+                clearInterval(volumeInterval);
+                music.volume = targetVolume;
+                return;
+            }
+            
+            music.volume = currentVolume + (volumeStep * step);
+            step++;
+        }, stepTime);
     }
 
     createParticles() {
@@ -353,6 +522,17 @@ class LightOfMyHeart {
     makeDiyasDance() {
         const diyas = document.querySelectorAll('.dancing-diya');
         
+        // Temporarily increase music volume for dance
+        const music = document.getElementById('backgroundMusic');
+        if (this.musicPlaying && music) {
+            const originalVolume = music.volume;
+            this.fadeInMusic(music, 500); // Quick fade to highlight dance
+            
+            setTimeout(() => {
+                music.volume = originalVolume;
+            }, 3000);
+        }
+        
         diyas.forEach((diya, index) => {
             setTimeout(() => {
                 diya.classList.add('dancing');
@@ -425,6 +605,12 @@ class LightOfMyHeart {
         const buttons = document.getElementById('responseButtons');
         
         diya.classList.add('clicked');
+        
+        // Dramatic music volume increase for confession
+        const music = document.getElementById('backgroundMusic');
+        if (this.musicPlaying && music) {
+            music.volume = Math.min(music.volume + 0.1, 0.4);
+        }
         
         setTimeout(() => {
             message.classList.remove('hidden');
@@ -594,7 +780,7 @@ class LightOfMyHeart {
         if (navigator.share) {
             navigator.share({
                 title: 'Light of My Heart - Diwali Love Story',
-                text: 'Experience this beautiful Diwali love confession!',
+                text: 'Experience this beautiful Diwali love confession with music and lights!',
                 url: window.location.href
             });
         } else {

@@ -10,9 +10,18 @@
 </head>
 <body>
     <!-- Background Music -->
-    <audio id="backgroundMusic" loop>
-        <source src="assets/diwali-music.mp3" type="audio/mpeg">
+    <audio id="backgroundMusic" loop preload="metadata">
+        <source src="static/audio/diwali-lights-serenade.mp3" type="audio/mpeg">
+        <source src="static/audio/diwali-lights-serenade.ogg" type="audio/ogg">
+        <source src="static/audio/diwali-lights-serenade.wav" type="audio/wav">
+        <!-- Fallback message for browsers that don't support audio -->
+        <p>Your browser does not support the audio element. Please update your browser for the complete Diwali experience.</p>
     </audio>
+    
+    <!-- Music Loading Status -->
+    <div id="musicLoadingStatus" class="fixed top-16 right-4 z-40 text-yellow-200 text-sm bg-black/50 rounded px-2 py-1 hidden">
+        🎵 Loading Diwali music...
+    </div>
     
     <!-- Music Toggle Button -->
     <button id="musicToggle" class="fixed top-4 right-4 z-50 bg-yellow-500 hover:bg-yellow-400 text-white p-3 rounded-full shadow-lg transition-all duration-300">
@@ -45,6 +54,12 @@
             <p class="text-xl md:text-2xl text-yellow-100 mb-8 animate-pulse">
                 This Diwali, I have something special to tell you…
             </p>
+            
+            <div class="text-center mb-4">
+                <p class="text-sm text-yellow-200/80">
+                    🎵 Click the music button (top-right) for the complete Diwali experience
+                </p>
+            </div>
             
             <div class="max-w-md mx-auto mb-6">
                 <input type="text" id="userName" placeholder="Enter your name" 
